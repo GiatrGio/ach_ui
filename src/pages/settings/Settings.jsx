@@ -6,14 +6,14 @@ import axios from "axios";
 import configData from "../../conf.json"
 
 export default function Settings() {
-  const [file, setFile] = useState(null);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [success, setSuccess] = useState(false);
-
   const { user, dispatch } = useContext(Context);
-  const PF = configData.API_URL + "/images/"
+
+  const [file, setFile] = useState(null);
+  const [username, setUsername] = useState(user.username);
+  const [email, setEmail] = useState(user.email);
+  const [password, setPassword] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const imagesURL = configData.API_URL + "/images/"
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,9 +21,11 @@ export default function Settings() {
     const updatedUser = {
       userId: user._id,
       username,
-      email,
-      password,
+      email
     };
+    if (password) {
+      updatedUser.password = password
+    }
     if (file) {
       const data = new FormData();
       const filename = Date.now() + file.name;
@@ -53,7 +55,7 @@ export default function Settings() {
           <label>Profile Picture</label>
           <div className="settingsPP">
             <img
-              src={file ? URL.createObjectURL(file) : PF+user.profilePic}
+              src={file ? URL.createObjectURL(file) : imagesURL+user.profilePic}
               alt=""
             />
             <label htmlFor="fileInput">
