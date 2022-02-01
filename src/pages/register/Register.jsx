@@ -1,31 +1,41 @@
 import axios from "axios";
-import { useContext} from "react";
-import { useState } from "react";
+import { useContext, useState} from "react";
 import { Context } from "../../context/Context";
 import "./register.css";
+import "../../global.css"
 import configData from "../../conf.json"
 import defaultProfileImage from "../../images/defaultProfileImage.jpg"
 
 export default function Register() {
   const [file, setFile] = useState(null);
+  const [usernameErrorMsg, setUsernameErrorMsg] = useState("");
+  const [emailErrorMsg, setEmailErrorMsg] = useState("");
+  const [passwordErrorMsg, setPasswordErrorMsg] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [usernameExists, setUsernameExists] = useState(false)
-  const [emailExists, setEmailExists] = useState(false);
-  const [profilePic, setProfilePic] = useState("hello")
-  const [error, setError] = useState(false);
+  const [usernameExists, setUsernameExists] = useState(false);
+  const [profilePic, setProfilePic] = useState("hello");
+  const [submitError, setSubmitError] = useState(false);
   const { dispatch, isFetching } = useContext(Context);
 
-  // const handleUsernameChange = (e) => {
-  //   try {
-  //     await axios.get(configData.API_URL + "/upload", data);
-  //   } catch (err) {}
-  // }
-
-  // const handleEmailChange = (e) => {
-
-  // }
+  const handleUsernameChange = async (newUserNameValue) => {
+    try {
+      if (newUserNameValue) {
+        let response = await axios.get(configData.API_URL + "/user/username/" + newUserNameValue);
+        if (response.data) {
+          setUsernameExists(true)
+          setUsername("")
+        } else {
+          setUsernameExists(false)
+          setUsername(newUserNameValue)
+        }
+      } else {
+        setUsernameExists(false)
+        setUsername("")
+      }
+    } catch (err) {}
+  }
 
   const handleProfileImage = (e) => {
     setFile(e.target.files[0])
@@ -33,10 +43,66 @@ export default function Register() {
     setProfilePic(filename);
   }
 
-  const handleSubmit = async (e) => {
+  const areSubmitValuesCorrect = () => {
+    resetErrorValues()
+    let usernameErrorString = "";
+    let passwordErrorString = "";
+    let emailErrorString = "";
+    if (usernameExists) {
+      usernameErrorString = "Username already exists.";
+      setSubmitError(true)
+    } else if (!username) {
+      usernameErrorString = "Username is empty."
+      setSubmitError(true)
+    }
+    if (!email) {
+      emailErrorString = "Email is empty";
+      setSubmitError(true)
+    } else if (!isEmailValid()) {
+      emailErrorString = "Email is not valid";
+      setSubmitError(true)
+    }
+    if (!password) {
+      passwordErrorString = "Password is empty."
+      setSubmitError(true)
+    }
+    if (usernameErrorString === "" && emailErrorString === "" && passwordErrorString === "") {
+      return true
+    }
+    else {
+      setUsernameErrorMsg(usernameErrorString);
+      setPasswordErrorMsg(passwordErrorString);
+      setEmailErrorMsg(emailErrorString);
+      return false
+    }
+  }
+
+  const resetErrorValues = () => {
+    setSubmitError(false);
+    setUsernameErrorMsg("");
+    setEmailErrorMsg("");
+    setPasswordErrorMsg("");
+  }
+  
+  const isEmailValid = () => {
+    return String(email)
+        .toLowerCase()
+        .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+  }
+
+  const handleSubmit = (e) => {
     e.preventDefault();
+    if (areSubmitValuesCorrect()) {
+      startRegister(e)
+    } else {
+      return null
+    }
+  }
+
+  const startRegister = async () => {
     dispatch({ type: "LOGIN_START" });
-    setError(false);
     try {
       if (file) {
         const data = new FormData();
@@ -57,7 +123,6 @@ export default function Register() {
       dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
     } catch (err) {
       console.log(err)
-      setError(true);
       dispatch({ type: "LOGIN_FAILURE" });
     }
   };
@@ -67,19 +132,23 @@ export default function Register() {
       <span className="registerTitle">Register</span>
       <form className="registerForm" onSubmit={handleSubmit}>
         <label>Username</label>
-        <input
-          type="text"
-          className="registerInput"
-          placeholder="Enter your username..."
-          onChange={(e) => setUsername(e.target.value)}
-        />
+        <div className={"registerField"}>
+          <input
+              style={{outline: (usernameExists) ? "2px solid red" : username ? "2px solid green" : "none"}}
+              type="text"
+              className="registerInput"
+              placeholder="Enter your username..."
+              onChange={(e) => handleUsernameChange(e.target.value)}
+          />
+        </div>
+        {usernameErrorMsg !== "" ? <span className={"errorMessage"}>{usernameErrorMsg}</span> : null}
         <label>Email</label>
         <input
-          type="text"
           className="registerInput"
           placeholder="Enter your email..."
           onChange={(e) => setEmail(e.target.value)}
         />
+        {emailErrorMsg !== "" ? <span className={"errorMessage"}>{emailErrorMsg}</span> : null}
         <label>Password</label>
         <input
           type="password"
@@ -87,27 +156,40 @@ export default function Register() {
           placeholder="Enter your password..."
           onChange={(e) => setPassword(e.target.value)}
         />
-                  <label>Profile Picture</label>
+        {passwordErrorMsg !== "" ? <span className={"errorMessage"}>{passwordErrorMsg}</span> : null}
+        <label>Profile Picture</label>
           <div className="settingsPP">
-            <img
-              src={defaultProfileImage}
-              alt=""
-            />
+            {file ? (
+                <img
+                    src={URL.createObjectURL(file)}
+                    alt=""
+                />
+            ) : (
+                <img
+                    src={defaultProfileImage}
+                    alt=""
+                />
+            )}
             <label htmlFor="fileInput">
               <i className="settingsPPIcon far fa-user-circle"></i>
             </label>
             <input
               type="file"
+              multiple accept={"image/*"}
               id="fileInput"
               style={{ display: "none" }}
               onChange={(e) => handleProfileImage(e)}
             />
           </div>
-        <button className="registerButton" type="submit" disabled={isFetching}>
+        <button
+            className="registerButton"
+            type="submit"
+            disabled={isFetching}
+        >
           Register
         </button>
       </form>
-      {error && <span style={{color:"red", marginTop:"10px"}}>Something went wrong!</span>}
+      {submitError ? <span className={"errorMessage"}>Please fill the fields correctly and try again!</span> : null}
     </div>
   );
 }

@@ -1,18 +1,19 @@
 import axios from "axios";
-import { useContext, useRef } from "react";
+import {useContext, useRef, useState} from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../../context/Context";
 import "./login.css";
+import "../../global.css"
 import configData from "../../conf.json"
 
 export default function Login() {
-  
-
+  const [error, setError] = useState(false);
   const userRef = useRef();
   const passwordRef = useRef();
   const { dispatch, isFetching } = useContext(Context);
 
   const handleSubmit = async (e) => {
+    setError(false)
     e.preventDefault();
     dispatch({ type: "LOGIN_START" });
     try {
@@ -20,8 +21,10 @@ export default function Login() {
         username: userRef.current.value,
         password: passwordRef.current.value,
       });
+      setError(false)
       dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
     } catch (err) {
+      setError(true)
       dispatch({ type: "LOGIN_FAILURE" });
     }
   };
@@ -35,6 +38,7 @@ export default function Login() {
           type="text"
           className="loginInput"
           placeholder="Enter your username..."
+          onChange={() => setError(false)}
           ref={userRef}
         />
         <label>Password</label>
@@ -42,6 +46,7 @@ export default function Login() {
           type="password"
           className="loginInput"
           placeholder="Enter your password..."
+          onChange={() => setError(false)}
           ref={passwordRef}
         />
         <button className="loginButton" type="submit" disabled={isFetching}>
@@ -53,6 +58,7 @@ export default function Login() {
           Register
         </Link>
       </button>
+      {error ? <span className={"errorMessage"}>Login Fail. Please try again!</span> : null}
     </div>
   );
 }

@@ -12,6 +12,10 @@
   background-size: cover;
 }
 
+.registerField {
+  display: inline-block;
+}
+
 .registerTitle {
   font-size: 50px;
 }
