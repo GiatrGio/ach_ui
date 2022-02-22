@@ -6,7 +6,7 @@ import configData from "../../conf.json"
 
 export default function TopBar() {
   const { user, dispatch } = useContext(Context);
-  const PF = configData.API_URL + "/images/"
+  const PF = configData.API_URL + "/image/"
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
@@ -20,29 +20,31 @@ export default function TopBar() {
         <i className="topIcon fab fa-instagram-square"></i>
       </div>
       <div className="topCenter">
-        <ul className="topList">
-          <li className="topListItem">
+        <ul>
+          <li>
             <Link className="link" to="/">
               HOME
             </Link>
           </li>
-          <li className="topListItem">
+          <li>
             <Link className="link" to="/">
               ABOUT
             </Link>
           </li>
-          <li className="topListItem">
+          <li>
             <Link className="link" to="/">
               CONTACT
             </Link>
           </li>
-          <li className="topListItem">
+          <li>
             <Link className="link" to="/write">
               WRITE
             </Link>
           </li>
-          <li className="topListItem" onClick={handleLogout}>
+          <li onClick={handleLogout}>
+            <Link className="link" to="/">
             {user && "LOGOUT"}
+            </Link>          
           </li>
         </ul>
       </div>
@@ -52,20 +54,19 @@ export default function TopBar() {
             <img className="topImg" src={PF+user.profilePic} alt="" />
           </Link>
         ) : (
-          <ul className="topList">
-            <li className="topListItem">
+          <ul>
+            <li>
               <Link className="link" to="/login">
                 LOGIN
               </Link>
             </li>
-            <li className="topListItem">
+            <li>
               <Link className="link" to="/register">
                 REGISTER
               </Link>
             </li>
           </ul>
         )}
-        <i className="topSearchIcon fas fa-search"></i>
       </div>
     </div>
   );
