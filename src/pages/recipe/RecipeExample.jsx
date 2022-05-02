@@ -44,7 +44,7 @@ const RecipeExample = {
     ],
     ingredientParts: [
         {
-            name: "Ingredient for the base",
+            name: "Base",
             ingredients: [
                 {
                     name: "Local rusks",
@@ -54,7 +54,7 @@ const RecipeExample = {
             ]
         },
         {
-            name: "Ingredient for the main dish",
+            name: "Main dish",
             ingredients: [
                 {
                     name: "Olive oil",

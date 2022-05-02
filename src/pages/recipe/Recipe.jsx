@@ -3,11 +3,9 @@ import "./Recipe.css";
 import axios from "axios";
 import { Context } from "../../context/Context";
 import configData from "../../conf.json"
-import {useLocation} from "react-router";
 import RecipeExample from "./RecipeExample"
-import Sidebar from "../../components/sidebar/Sidebar";
-import main from "./ExampleRecipe/main.jpeg"
-// import box1 from "ExampleRecipe/box1.jpeg"
+import IngredientBar from "../../components/ingredientBar/ingredientBar";
+import RecipeSteps from "../../components/recipeSteps/recipeSteps";
 
 
 export default function Editor() {
@@ -62,15 +60,11 @@ export default function Editor() {
           <div className="mainPhoto">
             <img src={mainImage}></img>
           </div>
-          <div className="recipeSteps">
-            <ul>
-            {recipeSteps.map((animal, index) => (
-        <li key={index}>{animal.text}</li>
-      ))}
-            </ul>
+          <div className="recipeStepDiv">
+              <RecipeSteps recipeSteps={recipeSteps}/>
           </div>
           <div className="ingredients">
-            <Sidebar />
+            <IngredientBar ingredientParts={RecipeExample.ingredientParts} />
           </div>
           <div className="otherRecipes">Other Recipes</div>
         </div>

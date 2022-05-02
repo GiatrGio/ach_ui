@@ -1,0 +1,45 @@
+.ingredientBar {
+  flex: 3;
+  margin: 2rem;
+  padding-bottom: 3rem;
+  background-color: #fdfbfb;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.indredientBarItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ingredientPartName {
+  text-transform: uppercase;
+  margin: 1rem;
+  padding: 0.5rem;
+  width: 80%;
+  border-top: 1px solid #a7a4a4;
+  border-bottom: 1px solid #a7a4a4;
+  color: #222;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: center;
+  align-items: center;
+}
+
+.sidebarItem > p {
+  /*padding: 30px;*/
+}
+
+
+.ingredientPart {
+  padding: 1rem;
+  text-align: start;
+}
+
+.ingredient {
+  padding: 0.2rem 0;
+  text-align: start;
+}
